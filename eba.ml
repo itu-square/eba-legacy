@@ -92,6 +92,7 @@ let infer_files verbosity
 	Opts.Set.match_lock_exp (not flag_no_match_lock_exp);
 	Opts.Set.ignore_writes flag_ignore_writes;
 	let checks = { chk_uninit; chk_dlock; chk_birq } in
+	Axioms.load_axioms();
 	List.iter (infer_file checks) files
 
 let files = Arg.(non_empty & pos_all file [] & info [] ~docv:"FILE")
@@ -137,15 +138,18 @@ let flag_externs_do_nothing =
 
 let opt_inline_limit =
 	let doc = "Inline function calls up to $(docv) times. Provide -1 to prevent inlining but accept some false positives." in
-	Arg.(value & opt int 5 & info ["inline-limit"] ~docv:"N" ~doc)
+	let def = Opts.Get.inline_limit() in
+	Arg.(value & opt int def & info ["inline-limit"] ~docv:"N" ~doc)
 
 let opt_loop_limit =
   let doc = "Take up to $(docv) loop iterations." in
-  Arg.(value & opt int 1 & info ["loop-limit"] ~docv:"N" ~doc)
+  let def = Opts.Get.loop_limit() in
+  Arg.(value & opt int def & info ["loop-limit"] ~docv:"N" ~doc)
 
 let opt_branch_limit =
   let doc = "Take up to $(docv) branch decisions." in
-  Arg.(value & opt int 15 & info ["branch-limit"] ~docv:"N" ~doc)
+  let def = Opts.Get.branch_limit() in
+  Arg.(value & opt int def & info ["branch-limit"] ~docv:"N" ~doc)
 
 let flag_no_path_check =
 	let doc = "Do not check path consistency." in
